@@ -23,7 +23,7 @@ jobs:
           - NuGetImporterForUnity
         unityVersion:
           # 使う Unity のバージョン
-          - 2022.3.7f1
+          - 2019.4.14f1
         testMode:
           # 実行するテストのモード
           - editmode
