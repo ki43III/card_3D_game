@@ -1,29 +1,46 @@
-name: Build
+name: Test
 
 on:
-  # masterへのPRマージをトリガーとしてワークフローを開始する
+  # プルリクが作られた・更新されたとき
   pull_request:
-    branches:
-      - master
-    types: [closed]
+    types: [opened, synchronize]
+  # mainブランチがプッシュされたとき
+  push: { branches: [main] }
 
-  # 手動実行デバッグ用
-  workflow_dispatch: {}
+env:
+  # さっき決めたいい感じの Secrets の名前
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
 jobs:
-  build:
-    name: Build my project
+  testAllModes:
+    name: Test in ${{ matrix.testMode }} on version ${{ matrix.unityVersion }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          # 走らせるプロジェクトのパス
+          - NuGetImporterForUnity
+        unityVersion:
+          # 使う Unity のバージョン
+          - 2022.3.7f1
+        testMode:
+          # 実行するテストのモード
+          - editmode
     steps:
-      # Checkout
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # Build
-      - name: Build project
-        uses: game-ci/unity-builder@v2
+      - uses: actions/checkout@v2.3.4
+      - uses: actions/cache@v2.1.4
+        with:
+          path: ${{ matrix.projectPath }}/Library
+          key: Library-${{ matrix.projectPath }}
+          restore-keys: |
+            Library-
+      - uses: webbertakken/unity-test-runner@v1.7
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        id: tests
         with:
-          targetPlatform: WebGL
-          unityVersion: 2022.3.7f1 # ここは各自プロジェクトに合わせて設定
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: ${{ matrix.testMode }}
+          artifactsPath: ${{ matrix.testMode }}-artifacts
