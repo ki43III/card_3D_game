@@ -15,9 +15,11 @@ public class mouse_ray_manage : MonoBehaviour
 
     public static bool is_exis_left = false;
     public static bool is_exis_center = false;
+    public static bool is_exis_right = false;
     
     public mouse_left Left_task;
     public mouse_center Center_task;
+    public mouse_right Right_task;
 
     public TextMeshPro gage_count;
     public TextMeshProUGUI zone_text;
@@ -36,23 +38,9 @@ public class mouse_ray_manage : MonoBehaviour
         bool gage_hit = false;
         bool left_hit = false;
         bool center_hit = false;
+        bool right_hit = false;
         if (Input.GetMouseButton(0))
         {
-
-            /*
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
-            {
-                if(hit.collider.tag == "stage")
-                {
-                    zone_text.text = "";
-                }
-            }
-            */
-
-
             Ray ray_M = Camera.main.ScreenPointToRay(Input.mousePosition);
             foreach (RaycastHit hit_M in Physics.RaycastAll(ray_M))
             {
@@ -61,7 +49,6 @@ public class mouse_ray_manage : MonoBehaviour
                     zone_text.text = "";
                 }
 
-                //Debug.Log(hit_M.collider.tag);
                 if (hit_M.collider.tag == "Card")
                 {
                     Card_hit = true;
@@ -75,15 +62,16 @@ public class mouse_ray_manage : MonoBehaviour
                 if(hit_M.collider.tag == "left")
                 {
                     left_hit = true;
-                    
                 }
                 if(hit_M.collider.tag == "center")
                 {
                     center_hit = true;
                     
                 }
-
-                
+                if(hit_M.collider.tag == "right")
+                {
+                    right_hit = true;
+                }
             }
 
             if (gage_hit == true && Card_hit == true)
@@ -116,8 +104,17 @@ public class mouse_ray_manage : MonoBehaviour
             {
                 is_exis_center = false;
             }
-        }
 
+            if(right_hit == true && Card_hit == true)
+            {
+                is_exis_right = true;
+                zone_text.text = "right";
+            }
+            else
+            {
+                is_exis_right = false;
+            }
+        }
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -220,8 +217,29 @@ public class mouse_ray_manage : MonoBehaviour
                     }
                 }
             }
-        }
 
+            if (is_exis_right == true)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+                {
+                    if (hit.collider.tag == "Card")
+                    {
+                        GameObject target_obj = hit.collider.gameObject;
+                        StartCoroutine(DelayCoroutine(0.01f, () =>
+                        {
+                            // 0.1秒後にここの処理が実行される
+                            Right_task.card_call(target_obj);
+                            Destroy(hit.collider.gameObject);
+                        }));
+
+                    }
+                }
+            }
+
+        }
     }
 
 

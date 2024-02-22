@@ -9,6 +9,7 @@ TagManager:
   - left
   - center
   - stage
+  - right
   layers:
   - Default
   - TransparentFX

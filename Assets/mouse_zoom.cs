@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class mouse_zoom : MonoBehaviour
 {
-
+    
     
     // Start is called before the first frame update
     void Start()
@@ -41,10 +41,12 @@ public class mouse_zoom : MonoBehaviour
         }
         else if(transform.parent.name == "card_erea")
         {
-            //Debug.Log("hand");
+            
             if (transform.localScale.x < 0.2f && mouse_ray_manage.isGrabbing == false)
             {
                 gameObject.transform.localScale = new Vector3(gameObject.transform.localScale.x * 1.1f, gameObject.transform.localScale.y * 1.1f, gameObject.transform.localScale.z * 1.1f);
+                card_alignment.alig_reset();
+                
             }
 
             if (mouse_ray_manage.isGrabbing == false)
@@ -53,6 +55,14 @@ public class mouse_zoom : MonoBehaviour
             }
         }
         
+    }
+
+    private void OnMouseEnter()
+    {
+        if (transform.parent.name == "card_erea")
+        {
+            
+        }
     }
 
     private void OnMouseExit()
